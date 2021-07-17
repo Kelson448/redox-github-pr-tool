@@ -1,0 +1,19 @@
+{
+  "name": "redox-github-pr-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "dependencies": {
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "jest": "^27.0.6",
+    "ts-jest": "^27.0.3"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Kelson Smith",
+  "license": "ISC"
+}
