@@ -1,8 +1,8 @@
-import { getPullRequests } from ".";
-jest.setTimeout(20000)
+import { getPullRequests } from "./getPullRequests";
+jest.setTimeout(60000)
 describe('index', ()=>{
 	it('fetchPRs runs', async ()=>{
 		const results = await getPullRequests()
-		console.log(results)
+		console.log(results.length)
 	})
 })
