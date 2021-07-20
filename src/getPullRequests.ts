@@ -13,21 +13,21 @@ interface PullRequest {
 		login: string;
 	};
 	publishedAt: string;
-	createdAt:string;
-	mergedAt:string;
-	updatedAt:string;
-	closedAt:string;
+	createdAt: string;
+	mergedAt: string;
+	updatedAt: string;
+	closedAt: string;
 	state: string;
 	title: string;
 	commits: { totalCount: number };
-	id:string;
+	id: string;
 }
 
 // fetch PRs
-export async function getPullRequests() {
+export async function getPullRequests( owner:string, repoName: string) {
 	const query = gql`
-		query getPullRequests($cursor: String) {
-			repository(name: "ramda", owner: "ramda") {
+		query getPullRequests($cursor: String, $repoName: String!, $owner:String!) {
+			repository(name: $repoName, owner: $owner) {
 				pullRequests(first: 100, after: $cursor) {
 					nodes {
 						author {
@@ -39,17 +39,16 @@ export async function getPullRequests() {
 						closedAt
 						state
 						title
-						commits(first:100) {
-						totalCount
-					}
-					id
+						commits(first: 100) {
+							totalCount
+						}
+						id
 					}
 					pageInfo {
 						endCursor
 						hasNextPage
 					}
 					totalCount
-
 				}
 			}
 		}
@@ -62,7 +61,11 @@ export async function getPullRequests() {
 	let totalCount: number = 0;
 
 	while (hasNextPage) {
-		const results: any = await client.request(query, { cursor: cursor });
+		const results: any = await client.request(query, {
+			cursor: cursor,
+			repoName,
+			owner
+		});
 		hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
 		cursor = results.repository.pullRequests.pageInfo.endCursor;
 		totalCount = results.repository.pullRequests.totalCount;
