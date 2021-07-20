@@ -1,12 +1,5 @@
-import { GraphQLClient, gql } from "graphql-request";
-import { GITHUB_TOKEN } from "./token";
-
-const url = "https://api.github.com/graphql";
-const client = new GraphQLClient(url, {
-	headers: {
-		authorization: `Bearer ${GITHUB_TOKEN}`,
-	},
-});
+import { gql } from "graphql-request";
+import { runPaginatedQuery } from "./runPaginatedQuery";
 
 interface PullRequest {
 	author: {
@@ -24,9 +17,13 @@ interface PullRequest {
 }
 
 // fetch PRs
-export async function getPullRequests( owner:string, repoName: string) {
+export async function getPullRequests(owner: string, repoName: string) {
 	const query = gql`
-		query getPullRequests($cursor: String, $repoName: String!, $owner:String!) {
+		query getPullRequests(
+			$cursor: String
+			$repoName: String!
+			$owner: String!
+		) {
 			repository(name: $repoName, owner: $owner) {
 				pullRequests(first: 100, after: $cursor) {
 					nodes {
@@ -54,23 +51,17 @@ export async function getPullRequests( owner:string, repoName: string) {
 		}
 	`;
 
-	// totalPrs = 1644
-	let pullRequests: PullRequest[] = [];
-	let cursor: string | undefined = undefined;
-	let hasNextPage = true;
-	let totalCount: number = 0;
+	const pullRequests = runPaginatedQuery<PullRequest>(
+		query,
+		{ repoName, owner },
+		(results) => {
+			const hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
+			const cursor = results.repository.pullRequests.pageInfo.endCursor;
+			const data = results.repository.pullRequests.nodes;
 
-	while (hasNextPage) {
-		const results: any = await client.request(query, {
-			cursor: cursor,
-			repoName,
-			owner
-		});
-		hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
-		cursor = results.repository.pullRequests.pageInfo.endCursor;
-		totalCount = results.repository.pullRequests.totalCount;
-		pullRequests = pullRequests.concat(results.repository.pullRequests.nodes);
-	}
+			return { hasNextPage, cursor, data };
+		}
+	);
 
 	return pullRequests;
 }
