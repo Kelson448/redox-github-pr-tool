@@ -14,6 +14,7 @@ interface PullRequest {
 	title: string;
 	commits: { totalCount: number };
 	id: string;
+	repository: { name: string };
 }
 
 // fetch PRs
@@ -40,6 +41,9 @@ export async function getPullRequests(owner: string, repoName: string) {
 							totalCount
 						}
 						id
+						repository {
+							name
+						}
 					}
 					pageInfo {
 						endCursor
