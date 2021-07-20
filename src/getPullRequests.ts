@@ -17,7 +17,12 @@ interface PullRequest {
 	repository: { name: string };
 }
 
-// fetch PRs
+/**
+ * Returns all pull requests for a specific org/repo
+ * @param owner name of owner organization
+ * @param repoName name of repo
+ * @returns
+ */
 export async function getPullRequests(owner: string, repoName: string) {
 	const query = gql`
 		query getPullRequests(

@@ -1,5 +1,13 @@
 import { client } from "./client";
 
+/**
+ * Runs a query that contains pagination, handling all cursor logic
+ * @param query Query to be run
+ * @param variables Record of variables, passed to query
+ * @param handler Handler for between page runs. Must return the cursor, hasNextPage,
+ *  and the data array to be combined after all pagination is completed
+ * @returns
+ */
 export async function runPaginatedQuery<T>(
 	query: string,
 	variables: Record<string, any>,

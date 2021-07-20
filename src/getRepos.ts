@@ -2,6 +2,11 @@ import { runPaginatedQuery } from "./runPaginatedQuery";
 import _ from 'lodash'
 import { gql } from "graphql-request";
 
+/**
+ * Returns an array of the names of all repos in a specific organization
+ * @param orgName Name of the github organization
+ * @returns
+ */
 export async function getRepos(orgName: string) {
 	const query = gql`
 		query getRepos($orgName: String!) {
